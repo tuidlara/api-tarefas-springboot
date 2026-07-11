@@ -1,91 +1,61 @@
 package com.arthur.tarefas.controller;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import com.arthur.tarefas.dto.TarefaRequestDTO;
 import com.arthur.tarefas.dto.TarefaResponseDTO;
-import com.arthur.tarefas.model.Tarefa;
 import com.arthur.tarefas.service.TarefaService;
-import jakarta.validation.Valid;
 
-import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/tarefas")
 public class TarefaController {
 
-    @Autowired
-    private TarefaService service;
+    private final TarefaService service;
+
+    public TarefaController(TarefaService service) {
+        this.service = service;
+    }
 
     @PostMapping
-    public ResponseEntity<TarefaResponseDTO> criarTarefa(@Valid @RequestBody Tarefa tarefa) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public TarefaResponseDTO criarTarefa(
+            @Valid @RequestBody TarefaRequestDTO dto) {
 
-        Tarefa tarefaCriada = service.criarTarefa(tarefa);
-        TarefaResponseDTO dto = converterParaDTO(tarefaCriada);
-
-        return ResponseEntity.status(201).body(dto);
+        return service.criarTarefa(dto);
     }
 
     @GetMapping
-    public ResponseEntity<List<TarefaResponseDTO>> listarTarefas() {
-        List<Tarefa> tarefas = service.listarTarefas();
-        List<TarefaResponseDTO> dtos = new ArrayList<>();
-        for (Tarefa tarefa : tarefas) {
-            dtos.add(converterParaDTO(tarefa));
-        }
-        return ResponseEntity.ok(dtos);
+    @ResponseStatus(HttpStatus.OK)
+    public List<TarefaResponseDTO> listarTarefas() {
+
+        return service.listarTarefas();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TarefaResponseDTO> buscarPorId(@PathVariable Long id) {
-        Optional<Tarefa> tarefa = service.buscarPorId(id);
+    @ResponseStatus(HttpStatus.OK)
+    public TarefaResponseDTO buscarPorId(@PathVariable Long id) {
 
-        if (tarefa.isPresent()) {
-            TarefaResponseDTO dto = converterParaDTO(tarefa.get());
-
-            return ResponseEntity.ok(dto);
-
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarTarefa(@PathVariable Long id) {
-
-        Optional<Tarefa> tarefa = service.buscarPorId(id);
-
-        if (tarefa.isPresent()) {
-            service.deletarTarefa(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        return service.buscarPorId(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TarefaResponseDTO> atualizarTarefa(@PathVariable Long id,
-            @Valid @RequestBody Tarefa tarefaAtualizada) {
-        Tarefa tarefa = service.atualizarTarefa(id, tarefaAtualizada);
-        if (tarefa != null) {
-            TarefaResponseDTO dto = converterParaDTO(tarefa);
+    @ResponseStatus(HttpStatus.OK)
+    public TarefaResponseDTO atualizarTarefa(
+            @PathVariable Long id,
+            @Valid @RequestBody TarefaRequestDTO dto) {
 
-            return ResponseEntity.ok().body(dto);
-        }
-        return ResponseEntity.notFound().build();
-
+        return service.atualizarTarefa(id, dto);
     }
 
-    private TarefaResponseDTO converterParaDTO(Tarefa tarefa) {
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletarTarefa(@PathVariable Long id) {
 
-        TarefaResponseDTO dto = new TarefaResponseDTO();
-        dto.setId(tarefa.getId());
-        dto.setTitulo(tarefa.getTitulo());
-        dto.setDescricao(tarefa.getDescricao());
-        dto.setConcluida(tarefa.isConcluida());
-
-        return dto;
+        service.deletarTarefa(id);
     }
 }
