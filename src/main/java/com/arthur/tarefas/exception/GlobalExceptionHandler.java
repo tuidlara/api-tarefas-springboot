@@ -1,33 +1,39 @@
 package com.arthur.tarefas.exception;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 // tratar exceções em toda a aplicação, evita muitos try-catch
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(TarefaNaoEncontradaException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> tratarErro(TarefaNaoEncontradaException e) {
+
+        Map<String, String> erro = new HashMap<>();
+
+        erro.put("erro", e.getMessage());
+
+        return erro;
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> tratarErroValidacao(
-            MethodArgumentNotValidException ex) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> tratarErroValidacao(MethodArgumentNotValidException e) {
 
         Map<String, String> erros = new HashMap<>();
 
-        // getBindingResult() -> Pega o resultado da validação.
-        // getFieldErrors() -> pega uma lista com todos os erros dos campos
-        // getDefaultMessage() -> pega a mensagem configurada na validação (que fiz tipo
-        // em @notBlank)
-        // erros.put() -> adiciona um item ao mapa (pois estou usando HashMap, que
-        // funciona chave / valor)
-
-        ex.getBindingResult().getFieldErrors().forEach(erro -> {
-            erros.put(erro.getField(), erro.getDefaultMessage());
+        e.getBindingResult().getFieldErrors().forEach(erroCampo -> {
+            erros.put(erroCampo.getField(), erroCampo.getDefaultMessage());
         });
 
-        return ResponseEntity.badRequest().body(erros);
+        return erros;
     }
 }
