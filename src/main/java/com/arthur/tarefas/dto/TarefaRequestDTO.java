@@ -8,6 +8,7 @@ public class TarefaRequestDTO {
     @NotBlank(message = "O título não pode ser vazio")
     private String titulo;
 
+    @NotBlank(message = "A descrição não pode ser vazia")
     @Size(min = 20, max = 500, message = "A descrição deve ter entre 20 e 500 caracteres")
     private String descricao;
 
