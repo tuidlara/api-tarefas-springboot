@@ -85,4 +85,19 @@ public class TarefaService {
 
         return dto;
     }
+
+    public List<TarefaResponseDTO> buscarPorTitulo(String titulo) {
+        List<Tarefa> tarefas = repository.findByTituloContainsIgnoreCase(titulo);
+        return tarefas.stream()
+                .map(this::converterParaDTO)
+                .toList();
+
+    }
+
+    public List<TarefaResponseDTO> buscarPorConcluida(boolean concluida) {
+        List<Tarefa> tarefas = repository.findByConcluida(concluida);
+        return tarefas.stream()
+                .map(this::converterParaDTO)
+                .toList();
+    }
 }

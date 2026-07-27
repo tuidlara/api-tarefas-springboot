@@ -58,4 +58,23 @@ public class TarefaController {
 
         service.deletarTarefa(id);
     }
+
+    @GetMapping("/titulo/{titulo}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TarefaResponseDTO> buscarPorTitulo(@PathVariable String titulo) {
+        return service.buscarPorTitulo(titulo);
+    }
+
+    @GetMapping("/concluidas")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TarefaResponseDTO> buscarConcluidas() {
+        return service.buscarPorConcluida(true);
+    }
+
+    @GetMapping("/pendentes")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TarefaResponseDTO> buscarPendentes() {
+        return service.buscarPorConcluida(false);
+    }
+
 }
