@@ -100,4 +100,11 @@ public class TarefaService {
                 .map(this::converterParaDTO)
                 .toList();
     }
+
+    public List<TarefaResponseDTO> buscarPorDescricao(String descricao) {
+        List<Tarefa> tarefas = repository.findByDescricaoContainingIgnoreCase(descricao);
+        return tarefas.stream()
+                .map(this::converterParaDTO)
+                .toList();
+    }
 }

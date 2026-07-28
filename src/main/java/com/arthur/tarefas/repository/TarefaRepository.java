@@ -11,4 +11,6 @@ public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
 
     List<Tarefa> findByConcluida(boolean concluida);
 
+    List<Tarefa> findByDescricaoContainingIgnoreCase(String descricao);
+
 }

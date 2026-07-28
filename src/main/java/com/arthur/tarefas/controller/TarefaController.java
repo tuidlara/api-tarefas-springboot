@@ -77,4 +77,9 @@ public class TarefaController {
         return service.buscarPorConcluida(false);
     }
 
+    @GetMapping("/descricao")
+    public List<TarefaResponseDTO> buscarPorDescricao(
+            @RequestParam String descricao) {
+        return service.buscarPorDescricao(descricao);
+    }
 }
