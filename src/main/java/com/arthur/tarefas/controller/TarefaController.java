@@ -78,6 +78,7 @@ public class TarefaController {
     }
 
     @GetMapping("/descricao")
+    @ResponseStatus(HttpStatus.OK)
     public List<TarefaResponseDTO> buscarPorDescricao(
             @RequestParam String descricao) {
         return service.buscarPorDescricao(descricao);
